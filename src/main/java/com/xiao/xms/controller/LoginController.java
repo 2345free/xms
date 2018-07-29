@@ -23,7 +23,7 @@ public class LoginController {
             String paramName = parameterNames.nextElement();
             log.info("{}={}", paramName, request.getParameter(paramName));
         }
-        return "index";
+        return "redirect:/index";
     }
 
     @GetMapping(value = "/logout")
