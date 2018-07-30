@@ -73,7 +73,7 @@ public class ShiroCasConfig {
         realm.setCacheManager(cacheManager);
         realm.setCasServerUrlPrefix(casProperties.getHost());
         // 客户端回调地址
-        realm.setCasService(appProperties.getHost() + "/logined");
+        realm.setCasService(appProperties.getHost() + appProperties.getLoginCallback());
         return realm;
     }
 
@@ -132,7 +132,7 @@ public class ShiroCasConfig {
         // 必须设置 SecurityManager
         shiroFilterFactoryBean.setSecurityManager(securityManager);
         // 如果不设置默认会自动寻找Web工程根目录下的"/login.jsp"页面
-        shiroFilterFactoryBean.setLoginUrl(casProperties.getLoginUrl() + "?service=" + appProperties.getHost() + "/logined");
+        shiroFilterFactoryBean.setLoginUrl(casProperties.getLoginUrl() + "?service=" + appProperties.getHost() + appProperties.getLoginCallback());
         // 登录成功后要跳转的连接
         shiroFilterFactoryBean.setSuccessUrl("/");
         shiroFilterFactoryBean.setUnauthorizedUrl("/error/403.html");
@@ -153,7 +153,7 @@ public class ShiroCasConfig {
         /**
          * @非常重要: 登录成功后解析获取ticket的过滤器
          */
-        filterChainDefinitionMap.put("/logined", "casFilter");
+        filterChainDefinitionMap.put(appProperties.getLoginCallback(), "casFilter");
         // anon: 它对应的过滤器里面是空的,什么都没做,可以理解为不拦截
         filterChainDefinitionMap.put("/**", "anon");
         shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);

@@ -17,4 +17,9 @@ public class AppProperties {
 
     private String logoutUrl;
 
+    /**
+     * cas登陆成功后回掉接受认证凭证的接口
+     */
+    private String loginCallback;
+
 }
