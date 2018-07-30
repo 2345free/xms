@@ -1,39 +1,18 @@
 package com.xiao.xms.model;
 
-import javax.persistence.*;
+import lombok.Data;
 
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Table;
+
+@Data
 @Table(name = "t_role")
 public class Role {
+    
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     private String rolename;
 
-    /**
-     * @return id
-     */
-    public Integer getId() {
-        return id;
-    }
-
-    /**
-     * @param id
-     */
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    /**
-     * @return rolename
-     */
-    public String getRolename() {
-        return rolename;
-    }
-
-    /**
-     * @param rolename
-     */
-    public void setRolename(String rolename) {
-        this.rolename = rolename;
-    }
 }
