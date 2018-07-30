@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class LoginController {
 
-    private static final String LOGOUTED_URL = "/logouted";
+    private static final String CAS_LOGOUTED_URL = "/logouted";
 
     @Autowired
     private CasProperties casProperties;
@@ -26,10 +26,10 @@ public class LoginController {
     @GetMapping("/logout")
     public String logout() {
         // cas服务器端登出
-        return "redirect:" + casProperties.getLogoutUrl() + "?service=" + appProperties.getHost() + LOGOUTED_URL;
+        return "redirect:" + casProperties.getLogoutUrl() + "?service=" + appProperties.getHost() + CAS_LOGOUTED_URL;
     }
 
-    @GetMapping(LOGOUTED_URL)
+    @GetMapping(CAS_LOGOUTED_URL)
     public String logouted() {
         // 客户端shiro登出
         SecurityUtils.getSubject().logout();

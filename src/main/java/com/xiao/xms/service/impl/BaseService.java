@@ -55,22 +55,22 @@ public abstract class BaseService<T> implements IService<T> {
     }
 
     @Override
-    public int save(T entity) {
+    public int insertSelective(T entity) {
         return mapper.insertSelective(entity);
     }
 
     @Override
-    public int delete(Object key) {
+    public int deleteByPrimaryKey(Object key) {
         return mapper.deleteByPrimaryKey(key);
     }
 
     @Override
-    public int updateAll(T entity) {
+    public int updateByPrimaryKey(T entity) {
         return mapper.updateByPrimaryKey(entity);
     }
 
     @Override
-    public int updateNotNull(T entity) {
+    public int updateByPrimaryKeySelective(T entity) {
         return mapper.updateByPrimaryKeySelective(entity);
     }
 

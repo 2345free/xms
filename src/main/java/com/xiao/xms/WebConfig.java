@@ -11,11 +11,13 @@ import tk.mybatis.spring.annotation.MapperScan;
  * @author: luoxiaoxiao
  */
 @Configuration
-@ComponentScan(basePackages = {"com.xiao.xms"})
+@ComponentScan(basePackages = {"com.xiao.xms"}, useDefaultFilters = false)
 @MapperScan(basePackages = {"com.xiao.xms.mapper"}, markerInterface = MyMapper.class)
-public class MvcConfig implements WebMvcConfigurer {
+public class WebConfig implements WebMvcConfigurer {
+
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
         registry.addRedirectViewController("/", "/index.html");
     }
+
 }

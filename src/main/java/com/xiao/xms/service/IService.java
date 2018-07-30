@@ -36,18 +36,60 @@ import java.util.List;
 @Service
 public interface IService<T> {
 
+    /**
+     * 通过主键获取一条数据
+     *
+     * @param key
+     * @return
+     */
     T selectByKey(Object key);
 
+    /**
+     * 通过参数实体对象中的非空属性作为条件查询一条数据
+     *
+     * @param entity
+     * @return
+     */
     T selectOne(T entity);
 
-    int save(T entity);
+    /**
+     * 保存
+     *
+     * @param entity
+     * @return
+     */
+    int insertSelective(T entity);
 
-    int delete(Object key);
+    /**
+     * 删除
+     *
+     * @param key
+     * @return
+     */
+    int deleteByPrimaryKey(Object key);
 
-    int updateAll(T entity);
+    /**
+     * 更新数据,参数对象属性为空则使用null覆盖数据库字段原来的值
+     *
+     * @param entity
+     * @return
+     */
+    int updateByPrimaryKey(T entity);
 
-    int updateNotNull(T entity);
+    /**
+     * 更新参数实体对象中的非空属性
+     *
+     * @param entity
+     * @return
+     */
+    int updateByPrimaryKeySelective(T entity);
 
+    /**
+     * 使用Example查询条件
+     *
+     * @param example
+     * @return
+     */
     List<T> selectByExample(Object example);
 
     //...
