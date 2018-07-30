@@ -32,10 +32,13 @@ import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.apache.shiro.web.servlet.SimpleCookie;
 import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
 import org.apache.shiro.web.session.mgt.WebSessionManager;
+import org.jasig.cas.client.session.SingleSignOutFilter;
+import org.jasig.cas.client.session.SingleSignOutHttpSessionListener;
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.filter.DelegatingFilterProxy;
@@ -85,6 +88,41 @@ public class ShiroCasConfig {
     }
 
     /**
+     * 注册单点登出listener
+     */
+    @Bean
+    public ServletListenerRegistrationBean singleSignOutHttpSessionListener() {
+        ServletListenerRegistrationBean bean = new ServletListenerRegistrationBean();
+        bean.setListener(new SingleSignOutHttpSessionListener());
+        //bean.setOrder(Ordered.HIGHEST_PRECEDENCE); //设置优先级
+        return bean;
+    }
+
+    /**
+     * 注册单点登出filter
+     */
+    @Bean
+    public FilterRegistrationBean singleSignOutFilter() {
+        FilterRegistrationBean bean = new FilterRegistrationBean();
+        bean.setFilter(new SingleSignOutFilter());
+        bean.addUrlPatterns("/*");
+        return bean;
+    }
+
+    /**
+     * CAS过滤器配置
+     */
+    @Bean
+    public CasFilter casFilter() {
+        CasFilter casFilter = new CasFilter();
+        // 登录失败后跳转的URL，也就是 Shiro 执行 CasRealm 的 doGetAuthenticationInfo
+        // 方法向CasServer验证tiket
+        // 我们选择认证失败后再打开首页
+        casFilter.setFailureUrl(appProperties.getLoginUrl());
+        return casFilter;
+    }
+
+    /**
      * 注册DelegatingFilterProxy（Shiro）
      * 集成Shiro有2种方法：
      * 1.按这个方法自己组装一个FilterRegistrationBean
@@ -105,19 +143,6 @@ public class ShiroCasConfig {
         // 可以自己灵活的定义很多，避免一些根本不需要被Shiro处理的请求被包含进来
         filterRegistration.addUrlPatterns("/*");
         return filterRegistration;
-    }
-
-    /**
-     * CAS过滤器配置
-     */
-    @Bean
-    public CasFilter casFilter() {
-        CasFilter casFilter = new CasFilter();
-        // 登录失败后跳转的URL，也就是 Shiro 执行 CasRealm 的 doGetAuthenticationInfo
-        // 方法向CasServer验证tiket
-        // 我们选择认证失败后再打开首页
-        casFilter.setFailureUrl(appProperties.getLoginUrl());
-        return casFilter;
     }
 
     /**
@@ -149,7 +174,6 @@ public class ShiroCasConfig {
         log.info("##################从数据库读取权限规则，加载到shiroFilter中##################");
         // 这里是测试固定写死的值,也可以从数据库或其他配置中读取
         filterChainDefinitionMap.put("/user/edit/**", "authc,perms[user:edit]");
-        filterChainDefinitionMap.put("/login", "anon");
         /**
          * @非常重要: 登录成功后解析获取ticket的过滤器
          */

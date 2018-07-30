@@ -1,10 +1,12 @@
 package com.xiao.xms.controller;
 
+import com.xiao.xms.config.AppProperties;
+import com.xiao.xms.config.CasProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
  * @author: luoxiaoxiao
@@ -13,11 +15,24 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 public class LoginController {
 
-    @GetMapping(value = "/logout")
-    public String logout(RedirectAttributes redirectAttributes) {
-        // 使用权限管理工具进行用户的退出,跳出登录,给出提示信息
+    private static final String LOGOUTED_URL = "/logouted";
+
+    @Autowired
+    private CasProperties casProperties;
+
+    @Autowired
+    private AppProperties appProperties;
+
+    @GetMapping("/logout")
+    public String logout() {
+        // cas服务器端登出
+        return "redirect:" + casProperties.getLogoutUrl() + "?service=" + appProperties.getHost() + LOGOUTED_URL;
+    }
+
+    @GetMapping(LOGOUTED_URL)
+    public String logouted() {
+        // 客户端shiro登出
         SecurityUtils.getSubject().logout();
-        redirectAttributes.addFlashAttribute("message", "您已安全退出");
         return "redirect:/index";
     }
 
