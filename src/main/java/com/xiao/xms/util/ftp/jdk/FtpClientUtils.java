@@ -25,43 +25,29 @@ public class FtpClientUtils {
     private String username;
     private String password;
 
-    private FtpClient ftp;
-
-    public FtpClient getFtp() {
-        return create();
-    }
-
     /**
      * 连接ftp服务器 JDK 1.7
      */
-    private FtpClient create() {
-        if (ftp != null && ftp.isConnected()) {
-            return ftp;
-        }
-        //创建ftp
-        try {
-            //创建地址
-            SocketAddress addr = new InetSocketAddress(host, port);
-            //连接
-            ftp = FtpClient.create();
-            ftp.connect(addr);
-            //登陆
-            ftp.login(username, password.toCharArray());
-            ftp.setBinaryType();
-            log.info(ftp.getWelcomeMsg());
-        } catch (FtpProtocolException | IOException e) {
-            log.error(e.getMessage(), e);
-        }
+    public FtpClient getFtp() throws IOException, FtpProtocolException {
+        //创建地址
+        SocketAddress addr = new InetSocketAddress(host, port);
+        //连接
+        FtpClient ftp = FtpClient.create();
+        ftp.connect(addr);
+        //登陆
+        ftp.login(username, password.toCharArray());
+        ftp.setBinaryType();
+        log.info(ftp.getWelcomeMsg());
         return ftp;
     }
 
     /**
      * 上传文件
      */
-    public String upload(String ftpPath, String fileName, InputStream in) {
+    public String upload(String ftpPath, String fileName, InputStream in) throws IOException, FtpProtocolException {
         OutputStream os = null;
         try {
-            getFtp();
+            FtpClient ftp = getFtp();
             ftp.changeDirectory(ftpPath);
             //将ftp文件加入输出流中。输出到ftp上
             os = ftp.putFileStream(fileName);
@@ -71,9 +57,7 @@ public class FtpClientUtils {
             while ((c = in.read(bytes)) != -1) {
                 os.write(bytes, 0, c);
             }
-            log.info("upload success!!");
-        } catch (FtpProtocolException | IOException e) {
-            log.error(e.getMessage(), e);
+            log.info("upload success!");
         } finally {
             try {
                 if (os != null) {
@@ -87,7 +71,7 @@ public class FtpClientUtils {
             }
         }
         if (!ftpPath.endsWith("/")) {
-            ftpPath = ftpPath + "/";
+            ftpPath += "/";
         }
         return ftpPath + fileName;
     }
@@ -95,11 +79,11 @@ public class FtpClientUtils {
     /**
      * 文件下载
      */
-    public void download(String ftpPath, String localFile, String ftpFile) {
+    public void download(String ftpPath, String localFile, String ftpFile) throws IOException, FtpProtocolException {
         InputStream is = null;
         FileOutputStream fos = null;
         try {
-            getFtp();
+            FtpClient ftp = getFtp();
             ftp.changeDirectory(ftpPath);
             //获取ftp上的文件
             is = ftp.getFileStream(ftpFile);
@@ -110,10 +94,7 @@ public class FtpClientUtils {
             while ((i = is.read(bytes)) != -1) {
                 fos.write(bytes, 0, i);
             }
-            log.info("download success!!");
-
-        } catch (FtpProtocolException | IOException e) {
-            log.error(e.getMessage(), e);
+            log.info("download success!");
         } finally {
             try {
                 if (fos != null) {
